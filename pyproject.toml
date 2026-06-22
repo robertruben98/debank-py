@@ -1,0 +1,85 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "debank-py"
+version = "0.1.0"
+description = "Typed Python client for the DeBank Cloud Pro API (multi-chain wallet portfolio, balances, protocols, tokens and history)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "robertruben98" }]
+keywords = [
+    "debank",
+    "portfolio",
+    "balances",
+    "defi",
+    "multi-chain",
+    "wallet",
+    "web3",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Typing :: Typed",
+]
+dependencies = [
+    "httpx>=0.24",
+    "pydantic>=2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/robertruben98/debank-py"
+Repository = "https://github.com/robertruben98/debank-py"
+Documentation = "https://docs.cloud.debank.com"
+Issues = "https://github.com/robertruben98/debank-py/issues"
+Changelog = "https://github.com/robertruben98/debank-py/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-asyncio>=0.23",
+    "respx>=0.20",
+    "mypy>=1.8",
+    "ruff>=0.4",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/debank"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/debank", "README.md", "CHANGELOG.md", "LICENSE"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+markers = [
+    "integration: live tests that hit the real DeBank Cloud API (require DEBANK_ACCESS_KEY)",
+]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "C4", "SIM"]
+# The DeBank client must run on Python 3.9 at runtime: keep typing.Optional/Union
+# in annotations instead of PEP 604 `X | None`.
+ignore = ["UP007", "UP045"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["src/debank"]
+warn_unused_configs = true

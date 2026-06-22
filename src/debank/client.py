@@ -81,12 +81,11 @@ class DeBankClient:
         self.base_url = base_url.rstrip("/")
         self.max_retries = max_retries
         self.backoff_factor = backoff_factor
+        # Built once and applied on every request so the AccessKey is sent
+        # whether the transport was created here or supplied via ``client=``.
+        self._headers = build_headers(access_key, access_key_header)
         self._owns_client = client is None
-        self._client = client or httpx.Client(
-            base_url=self.base_url,
-            headers=build_headers(access_key, access_key_header),
-            timeout=timeout,
-        )
+        self._client = client or httpx.Client(base_url=self.base_url, timeout=timeout)
 
     def __enter__(self) -> DeBankClient:
         return self
@@ -109,7 +108,7 @@ class DeBankClient:
         cleaned = clean_params(params)
         attempt = 0
         while True:
-            response = self._client.request(method, path, params=cleaned)
+            response = self._client.request(method, path, params=cleaned, headers=self._headers)
             if is_retryable(response) and attempt < self.max_retries:
                 delay = backoff_delay(attempt, self.backoff_factor, parse_retry_after(response))
                 if delay > 0:

@@ -26,14 +26,15 @@ def test_base_url_is_configurable_and_trailing_slash_stripped():
 
 def test_access_key_sent_under_default_header_name():
     client = DeBankClient("secret-key")
-    assert client._client.headers["AccessKey"] == "secret-key"
+    # The auth header is applied on every request (see _request); it is built once.
+    assert client._headers["AccessKey"] == "secret-key"
     client.close()
 
 
 def test_access_key_header_name_is_configurable():
     client = DeBankClient("secret-key", access_key_header="X-Access-Key")
-    assert client._client.headers["X-Access-Key"] == "secret-key"
-    assert "AccessKey" not in client._client.headers
+    assert client._headers["X-Access-Key"] == "secret-key"
+    assert "AccessKey" not in client._headers
     client.close()
 
 
@@ -57,5 +58,5 @@ async def test_async_client_construction_and_header():
     client = AsyncDeBankClient("secret-key")
     assert client.access_key == "secret-key"
     assert client.base_url == "https://pro-openapi.debank.com"
-    assert client._client.headers["AccessKey"] == "secret-key"
+    assert client._headers["AccessKey"] == "secret-key"
     await client.aclose()

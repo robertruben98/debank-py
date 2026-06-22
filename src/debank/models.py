@@ -92,12 +92,18 @@ class Token(_DeBankModel):
     protocol_id: Optional[str] = Field(default=None, description="Owning protocol id, if any.")
     is_core: Optional[bool] = Field(default=None, description="Whether DeBank treats it as core.")
     price: Optional[float] = Field(default=None, description="USD price of the token.")
-    time_at: Optional[float] = Field(default=None, description="Token creation timestamp.")
-    amount: Optional[float] = Field(
-        default=None, description="Wallet balance (user endpoints only)."
+    time_at: Optional[int] = Field(
+        default=None, description="Token creation Unix timestamp (seconds)."
     )
-    raw_amount: Optional[float] = Field(
-        default=None, description="Wallet balance in smallest units (user endpoints only)."
+    amount: Optional[float] = Field(
+        default=None, description="Decimal-adjusted wallet balance (user endpoints only)."
+    )
+    raw_amount: Optional[int] = Field(
+        default=None,
+        description=(
+            "Wallet balance in the token's smallest unit (user endpoints only). "
+            "Typed as int to preserve exact values beyond float64 precision."
+        ),
     )
 
 
